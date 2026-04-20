@@ -5,3 +5,6 @@ indicators:
   gini:
     unit: index
     source: household_survey   
+  poverty_gap:
+    unit: percent
+    source: household_survey
