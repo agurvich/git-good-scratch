@@ -1,6 +1,6 @@
 [project]
 name = "wb-analytics"
-version = "0.1.0"
+version = "0.2.0.dev0"
 description = "Internal analytics utilities for WB poverty, inequality, and indicator pipelines."
 readme = "README.md"
 requires-python = ">=3.9"
