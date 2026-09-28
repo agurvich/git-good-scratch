@@ -1,0 +1,20 @@
+# Dependabot opens a pull request when a newer version of something we
+# depend on is released. Each PR runs the full CI, so a bump only merges
+# once the tests pass with it.
+version: 2
+updates:
+  - package-ecosystem: pip
+    directory: "/"
+    schedule:
+      interval: weekly
+    # Raise the ">=" floors in pyproject.toml, so every bump is visible
+    # and tested, rather than silently allowed.
+    versioning-strategy: increase
+    open-pull-requests-limit: 3
+    labels: [dependencies]
+
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+    labels: [dependencies, ci]
