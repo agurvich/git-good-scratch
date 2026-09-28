@@ -63,7 +63,10 @@ else:
             path = path.replace(cwd, "")
             lines.append(f"- `{path}` is not laid out the way `ruff format` would write it.")
         lines.append("")
-    lines.append("Click **Commit suggestion** on the review comments below to apply the fixes.")
+    lines.append(
+        "Each review comment below carries the fix: click **Apply suggestion** "
+        "(or **Commit suggestions** in *Files changed*) to accept it."
+    )
 body = "\n".join(lines) + "\n"
 
 print(body)

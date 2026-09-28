@@ -3,7 +3,7 @@ name: Ruff review
 # A robot reviewer. On every pull request it
 #   1. pins Ruff's findings to the changed lines (annotations on "Files changed"),
 #   2. posts one summary comment in plain words, updated on every push,
-#   3. runs Ruff's own fixes and offers them as "Commit suggestion" buttons.
+#   3. runs Ruff's own fixes and offers them as review suggestions ("Apply suggestion").
 # It never fails the pull request: the required check is still `test`.
 
 on:
