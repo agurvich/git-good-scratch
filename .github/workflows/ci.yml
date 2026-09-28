@@ -8,11 +8,26 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.9", "3.11", "3.13"]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: ${{ matrix.python-version }}
       - run: pip install -e ".[dev]"
       - run: ruff check src tests
-      - run: pytest
+      - name: pytest with coverage
+        shell: bash
+        run: |
+          {
+            echo "### Coverage (Python ${{ matrix.python-version }})"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          pytest --cov=wb_analytics --cov-report=term-missing | tee pytest-output.txt
+          status=${PIPESTATUS[0]}
+          sed -n '/coverage: platform/,/^TOTAL/p' pytest-output.txt >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          exit "$status"
