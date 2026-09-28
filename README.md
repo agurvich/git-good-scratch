@@ -1,5 +1,7 @@
 # WB Analytics
 
+[![CI](https://github.com/agurvich/git-good-scratch/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/agurvich/git-good-scratch/actions/workflows/ci.yml)
+
 Internal analytics utilities for World Bank poverty, inequality, and
 indicator pipelines.
 
