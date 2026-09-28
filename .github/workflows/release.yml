@@ -1,0 +1,30 @@
+name: Release
+
+# Pushing a tag like v0.2.0 builds the package and publishes a GitHub
+# Release for it: notes generated from the merged pull requests, with the
+# wheel and source archive attached.
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: build and publish release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: astral-sh/setup-uv@v10.2.0
+      - name: Build the wheel and source archive
+        run: uv build
+      - name: Create the GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" dist/* \
+            --title "wb-analytics $GITHUB_REF_NAME" \
+            --generate-notes \
+            --verify-tag
