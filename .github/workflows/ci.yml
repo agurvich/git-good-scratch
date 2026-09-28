@@ -6,7 +6,8 @@ on:
   pull_request:
 
 jobs:
-  test:
+  pytest:
+    name: test (${{ matrix.python-version }})
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -31,3 +32,16 @@ jobs:
           sed -n '/coverage: platform/,/^TOTAL/p' pytest-output.txt >> "$GITHUB_STEP_SUMMARY"
           echo '```' >> "$GITHUB_STEP_SUMMARY"
           exit "$status"
+
+  # Branch protection requires one check called `test`. Matrix legs report as
+  # `test (3.9)` etc., so this job stands in for all of them.
+  test:
+    name: test
+    needs: pytest
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: every Python version passed
+        run: |
+          echo "matrix result: ${{ needs.pytest.result }}"
+          test "${{ needs.pytest.result }}" = "success"
