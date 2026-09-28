@@ -16,7 +16,7 @@ jobs:
     name: build and publish release
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7.0.1
+      - uses: actions/checkout@v7
       - uses: astral-sh/setup-uv@v10.2.0
       - name: Build the wheel and source archive
         run: uv build
