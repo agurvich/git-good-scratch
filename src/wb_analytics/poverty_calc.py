@@ -34,7 +34,15 @@ def poverty_rate(incomes, line=POVERTY_LINE_USD_PPP, breakdown=None):
 
     `breakdown`, if given, is an optional disaggregation dimension
     (e.g. "urban" or "rural") for future use by callers that pass
-    pre-filtered income lists."""
+    pre-filtered income lists.
+
+    Raises ValueError if `incomes` is empty: a poverty rate of nobody is
+    undefined, and usually means a country/year filter matched no rows."""
+    if len(incomes) == 0:
+        raise ValueError(
+            "poverty_rate() got an empty income list; "
+            "check that your country/year filter matched some survey rows"
+        )
 
     below = [i for i in incomes if i < line]
 
