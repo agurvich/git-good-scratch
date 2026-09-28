@@ -1,0 +1,60 @@
+name: Ruff review
+
+# A robot reviewer. On every pull request it
+#   1. pins Ruff's findings to the changed lines (annotations on "Files changed"),
+#   2. posts one summary comment in plain words, updated on every push,
+#   3. runs Ruff's own fixes and offers them as "Commit suggestion" buttons.
+# It never fails the pull request: the required check is still `test`.
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  ruff-review:
+    name: ruff review
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v7.0.0
+        with:
+          python-version: "3.11"
+      - run: pip install ruff==0.16.9
+
+      - name: Find the Python files this pull request changes
+        id: files
+        run: |
+          files=$(git diff --name-only --diff-filter=AM "origin/${{ github.base_ref }}...HEAD" -- '*.py' | tr '\n' ' ')
+          echo "Changed Python files: ${files:-none}"
+          echo "list=$files" >> "$GITHUB_OUTPUT"
+
+      - name: Annotate the diff with Ruff's findings
+        if: steps.files.outputs.list != ''
+        run: ruff check --output-format=github ${{ steps.files.outputs.list }} || true
+
+      - name: Post or update the summary comment
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          FILES: ${{ steps.files.outputs.list }}
+        run: python .github/scripts/ruff_comment.py
+
+      - name: Apply Ruff's fixes in the runner (not pushed)
+        if: steps.files.outputs.list != ''
+        run: |
+          ruff check --fix ${{ steps.files.outputs.list }} || true
+          ruff format ${{ steps.files.outputs.list }}
+          git diff --stat
+
+      - name: Offer the fixes as review suggestions
+        if: steps.files.outputs.list != ''
+        uses: reviewdog/action-suggester@v1.26.1
+        with:
+          tool_name: ruff
+          level: warning
+          filter_mode: diff_context
